@@ -10,11 +10,19 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
 app:
   s3:
     bucket: your-bucket-name
     sqsQueue: your-s3-event-queue-name
+  jwt:
+    secret: mySecretKeyThatIsAtLeast32CharactersLongForJWTSecurity
+    expiration: 86400
 
 cloud:
   aws:
@@ -22,4 +30,17 @@ cloud:
       static: us-east-1
 
 server:
-  port: 8080
+  port: 8082
+
+# CORS Configuration
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:8080,http://localhost:8082
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: '*'
+  allow-credentials: true
+
+# Logging
+logging:
+  level:
+    com.app: DEBUG
+    org.springframework.web: DEBUG

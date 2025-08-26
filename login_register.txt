@@ -1,0 +1,111 @@
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+    
+    // ✅ Already working (based on your logs)
+    @GetMapping("/me")
+    public ResponseEntity<UserSummary> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+        // Extract token from "Bearer <token>"
+        String token = authHeader.substring(7);
+        // Your existing logic
+    }
+    
+    // ❓ Need to verify these exist:
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        // Should return: { "token": "jwt_token", "user": UserObject }
+    }
+    
+    @PostMapping("/register") 
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+        // Should return: { "token": "jwt_token", "user": UserObject }
+    }
+}
+
+
+Login Request:
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+Login/Register Response:
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "string",
+    "name": "string", 
+    "username": "string",
+    "avatar": "string",
+    "bio": "string",
+    "location": "string",
+    "website": "string",
+    "joinedAt": "2023-08-23T17:30:00Z",
+    "isVerified": true,
+    "followersCount": 0,
+    "followingCount": 0,
+    "postsCount": 0,
+    "totalSpent": 0.0,
+    "avgRating": 0.0,
+    "isOnline": true
+  }
+}
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+                .allowedOrigins(
+                    "http://localhost:8082",  // ✅ Add this - new frontend port
+                    "http://localhost:8080",  // Keep existing if needed
+                    "http://localhost:5173"   // Vite default port
+                )
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
+}
+
+// In your security filter or controller
+String authHeader = request.getHeader("Authorization");
+if (authHeader != null && authHeader.startsWith("Bearer ")) {
+    String token = authHeader.substring(7);
+    // Validate token and extract user info
+}
+
+public class User {
+    private String id;
+    private String name;
+    private String username; 
+    private String avatar;
+    private String bio;
+    private String location;
+    private String website;
+    private LocalDateTime joinedAt;
+    private boolean isVerified;
+    private boolean isOnline;
+    private int followersCount;
+    private int followingCount;
+    private int postsCount;
+    private BigDecimal totalSpent;
+    private double avgRating;
+    // getters and setters
+}
+
+Add Missing Endpoints (if not present):
+
+@PostMapping("/login")
+public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    // Authenticate user
+    // Generate JWT token
+    // Return token + user data
+}
+
+@PostMapping("/register")
+public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    // Create new user
+    // Generate JWT token  
+    // Return token + user data
+}

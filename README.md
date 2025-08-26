@@ -11,12 +11,15 @@ Each post can contain:
 
 - **User authentication** with JWT (login & registration)
 - **Posts API** (CRUD operations, like/comment/repost counters)
+- **Real-time updates** with WebSocket support
+- **Trending items** and statistics endpoints
+- **User profiles** with follow functionality
+- **Platform integration** (link posts to platforms like Amazon, Flipkart, etc.)
 - **Media upload flow**:
     - Generate presigned S3 URLs for upload
     - Background worker listens for S3 `ObjectCreated` events via SQS
     - Updates media status to `READY` and performs thumbnail/transcoding jobs
-- **Platform integration** (link posts to platforms like Amazon, Flipkart, etc.)
-- **Database**: PostgreSQL with JPA
+- **Database**: H2 (for development) with JPA
 - **Infrastructure ready** for AWS S3 + SQS
 
 ---
@@ -24,16 +27,18 @@ Each post can contain:
 ## 🏗 Project Structure
 
 ```
-src/main/java/com/yourapp/
-├── PurchasePostBackendApplication.java   # Main entrypoint
-├── config/                               # Security, AWS (S3, SQS) configs
-├── controller/                           # REST controllers (Auth, Post, Media)
+src/main/java/com/app/
+├── Application.java                       # Main entrypoint
+├── auth/                                 # Authentication (DTOs, Service, Controller, Security)
+├── config/                               # Security, CORS, WebSocket configs
+├── controller/                           # REST controllers (Auth, Post, Media, User, Trending, Platform)
 ├── dto/                                  # DTOs (UserResponse, PostResponse, etc.)
 ├── entity/                               # Entities (User, Post, Media, Platform)
+├── init/                                 # Data initialization
 ├── mapper/                               # MapStruct mappers
 ├── repository/                           # Spring Data JPA repositories
-├── security/                             # JWT utils, filters
-├── service/                              # Services (UserService, PostService, MediaService)
+├── service/                              # Services (UserService, PostService, MediaService, TrendingService)
+├── trending/                             # Trending items and stats
 └── worker/                               # S3 event listener, media processor
 ```
 
@@ -42,9 +47,10 @@ src/main/java/com/yourapp/
 ## ⚙️ Tech Stack
 
 - **Java 17+**
-- **Spring Boot 3**
+- **Spring Boot 3.2.0**
 - **Spring Security** (JWT)
-- **Spring Data JPA** (PostgreSQL)
+- **Spring Data JPA** (H2 for development)
+- **Spring WebSocket** (real-time updates)
 - **MapStruct** (DTO mapping)
 - **AWS SDK v2** (S3, SQS)
 - **Spring Cloud AWS SQS** (for `@SqsListener`)
@@ -56,46 +62,81 @@ src/main/java/com/yourapp/
 
 ### 1. Clone repo
 ```bash
-git clone https://github.com/your-org/purchase-post-backend.git
-cd purchase-post-backend
+git clone https://github.com/prasvino/purchase-post-service.git
+cd purchase-post-service
 ```
 
-### 2. Configure environment
-Update `src/main/resources/application.yml` with your AWS + DB config:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/purchasepost
-    username: postgres
-    password: password
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-cloud:
-  aws:
-    region:
-      static: us-east-1
-
-app:
-  s3:
-    bucket: your-media-bucket
-    sqsQueue: your-s3-event-queue
-jwt:
-  secret: change-me
-```
-
-### 3. Run
+### 2. Build and run
 ```bash
+mvn clean install
 mvn spring-boot:run
 ```
 
-### 4. Test APIs
-- `POST /auth/register` → Register new user
-- `POST /auth/login` → Get JWT token
-- `POST /posts` → Create post (requires JWT)
-- `GET /posts/{id}` → Get post details
+The application will start on `http://localhost:8080`
+
+### 3. Test APIs
+
+#### Authentication
+- `POST /api/auth/register` → Register new user
+- `POST /api/auth/login` → Get JWT token
+- `GET /api/auth/me` → Get current user profile
+
+#### Posts
+- `GET /api/posts?page=1&limit=10` → Get paginated posts
+- `POST /api/posts` → Create post (requires JWT)
+- `GET /api/posts/{id}` → Get post details
+- `POST /api/posts/{id}/like` → Like a post
+- `POST /api/posts/{id}/repost` → Repost a post
+
+#### Users
+- `GET /api/users/{username}` → Get user profile
+- `POST /api/users/{userId}/follow` → Follow a user
+
+#### Trending & Stats
+- `GET /api/trending` → Get trending items
+- `GET /api/stats` → Get platform statistics
+- `GET /api/platforms` → Get available platforms
+
+#### WebSocket
+- Connect to `ws://localhost:8080/ws` for real-time updates
+
+### 4. H2 Console
+Access the H2 database console at:
+```
+http://localhost:8080/h2-console
+```
+- JDBC URL: `jdbc:h2:mem:purchase_post_db`
+- User: `sa`
+- Password: (leave empty)
+
+---
+
+## 🧪 Sample Data
+
+The application automatically initializes with sample data including:
+- 3 sample users (johndoe, janesmith, mikejohnson)
+- 3 platforms (Amazon, eBay, Best Buy)
+- 5 sample posts with interactions
+
+---
+
+## 🔌 Frontend Integration
+
+This backend is designed to work with the Buy It Share It frontend. The frontend expects:
+
+- **Base URL**: `http://localhost:8080/api`
+- **WebSocket URL**: `ws://localhost:8080/ws`
+- **CORS**: Configured for `http://localhost:3000`
+
+### Authentication Flow
+1. Frontend sends login/register request to `/api/auth/*`
+2. Backend returns JWT token
+3. Frontend includes token in `Authorization: Bearer <token>` header
+4. Backend validates token for protected endpoints
+
+### Real-time Updates
+- Backend sends WebSocket messages on `/topic/posts`
+- Frontend listens for: NEW_POST, POST_LIKED, POST_REPOSTED, USER_FOLLOWED, TRENDING_UPDATED, STATS_UPDATED
 
 ---
 
@@ -115,9 +156,11 @@ For local dev without AWS:
 ## 📌 Next Steps
 
 - Add search & feed APIs
-- Implement likes/comments/reposts APIs
+- Implement comments APIs
 - Add CI/CD pipeline with GitHub Actions
 - Integrate caching (Redis) for hot feeds
+- Add file upload functionality
+- Implement proper user authentication context
 
 ---
 

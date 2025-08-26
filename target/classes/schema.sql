@@ -1,10 +1,22 @@
 -- Basic schema (H2/Postgres compatible)
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY,
-  username VARCHAR(100) UNIQUE,
+  username VARCHAR(100) UNIQUE NOT NULL,
   display_name VARCHAR(200),
-  email VARCHAR(200),
-  avatar_url TEXT
+  email VARCHAR(200) UNIQUE,
+  password VARCHAR(255),
+  avatar_url TEXT,
+  bio TEXT,
+  location VARCHAR(200),
+  website TEXT,
+  joined_at TIMESTAMP,
+  is_verified BOOLEAN DEFAULT FALSE,
+  followers_count INT DEFAULT 0,
+  following_count INT DEFAULT 0,
+  posts_count INT DEFAULT 0,
+  total_spent DECIMAL(10,2) DEFAULT 0.00,
+  avg_rating DECIMAL(3,2) DEFAULT 0.00,
+  is_online BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS platforms (
@@ -37,9 +49,14 @@ CREATE TABLE IF NOT EXISTS posts (
   product_url TEXT,
   visibility VARCHAR(50),
   metadata TEXT,
-  like_count INT,
-  comment_count INT,
-  repost_count INT,
+  like_count INT DEFAULT 0,
+  comment_count INT DEFAULT 0,
+  repost_count INT DEFAULT 0,
   created_at TIMESTAMP,
   updated_at TIMESTAMP
 );
+
+-- Add foreign key constraints
+ALTER TABLE posts ADD CONSTRAINT fk_posts_author FOREIGN KEY (author_id) REFERENCES users(id);
+ALTER TABLE posts ADD CONSTRAINT fk_posts_platform FOREIGN KEY (platform_id) REFERENCES platforms(id);
+ALTER TABLE media ADD CONSTRAINT fk_media_uploader FOREIGN KEY (uploader_id) REFERENCES users(id);

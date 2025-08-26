@@ -13,16 +13,30 @@ import java.util.UUID;
 @Data @Builder
 public class PostResponse {
     private UUID id;
-    private String text;
+    private UserSummary user;
+    private String content;
     private LocalDate purchaseDate;
     private BigDecimal price;
     private String currency;
-    private UUID platformId;
-    private UserSummary author;
-    private String productUrl;
-    private List<String> mediaUrls;
-    private int likeCount;
-    private int commentCount;
-    private int repostCount;
-    private Instant createdAt;
+    private Platform platform;
+    private String media;
+    private String mediaType;
+    private String location;
+    private List<String> tags;
+    private Instant timestamp;
+    private Integer likes;
+    private Integer comments;
+    private Integer reposts;
+    private Boolean isLiked;
+    private Boolean isReposted;
+    
+    // Platform inner class
+    @Data
+    @Builder
+    public static class Platform {
+        private UUID id;
+        private String name;
+        private String icon;
+        private String color;
+    }
 }
