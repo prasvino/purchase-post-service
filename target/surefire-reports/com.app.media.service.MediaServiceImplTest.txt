@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.app.media.service.MediaServiceImplTest
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.388 s -- in com.app.media.service.MediaServiceImplTest

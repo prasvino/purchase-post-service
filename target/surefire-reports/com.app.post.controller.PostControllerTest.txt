@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.app.post.controller.PostControllerTest
+-------------------------------------------------------------------------------
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.844 s -- in com.app.post.controller.PostControllerTest
