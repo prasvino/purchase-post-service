@@ -30,7 +30,7 @@ cloud:
       static: us-east-1
 
 server:
-  port: 8082
+  port: 8081
 
 # CORS Configuration
 cors:

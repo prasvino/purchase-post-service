@@ -157,6 +157,7 @@ public class DataInitializer implements CommandLineRunner {
                 .likeCount(45)
                 .commentCount(12)
                 .repostCount(8)
+                .shareCount(15)
                 .createdAt(Instant.now().minus(2, ChronoUnit.DAYS))
                 .updatedAt(Instant.now().minus(2, ChronoUnit.DAYS))
                 .build();
@@ -173,6 +174,7 @@ public class DataInitializer implements CommandLineRunner {
                 .likeCount(23)
                 .commentCount(7)
                 .repostCount(3)
+                .shareCount(6)
                 .createdAt(Instant.now().minus(5, ChronoUnit.DAYS))
                 .updatedAt(Instant.now().minus(5, ChronoUnit.DAYS))
                 .build();
@@ -189,6 +191,7 @@ public class DataInitializer implements CommandLineRunner {
                 .likeCount(67)
                 .commentCount(15)
                 .repostCount(12)
+                .shareCount(20)
                 .createdAt(Instant.now().minus(1, ChronoUnit.DAYS))
                 .updatedAt(Instant.now().minus(1, ChronoUnit.DAYS))
                 .build();
@@ -205,6 +208,7 @@ public class DataInitializer implements CommandLineRunner {
                 .likeCount(34)
                 .commentCount(9)
                 .repostCount(5)
+                .shareCount(8)
                 .createdAt(Instant.now().minus(3, ChronoUnit.DAYS))
                 .updatedAt(Instant.now().minus(3, ChronoUnit.DAYS))
                 .build();
@@ -221,6 +225,7 @@ public class DataInitializer implements CommandLineRunner {
                 .likeCount(89)
                 .commentCount(22)
                 .repostCount(18)
+                .shareCount(25)
                 .createdAt(Instant.now().minus(4, ChronoUnit.DAYS))
                 .updatedAt(Instant.now().minus(4, ChronoUnit.DAYS))
                 .build();

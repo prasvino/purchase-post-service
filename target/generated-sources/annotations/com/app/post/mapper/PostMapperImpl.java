@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-24T00:02:53+0530",
+    date = "2025-08-26T22:34:41+0530",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.8 (Oracle Corporation)"
 )
 @Component
@@ -32,6 +32,7 @@ public class PostMapperImpl implements PostMapper {
         postResponse.likes( post.getLikeCount() );
         postResponse.comments( post.getCommentCount() );
         postResponse.reposts( post.getRepostCount() );
+        postResponse.shares( post.getShareCount() );
         postResponse.platform( mapPlatform( post.getPlatform() ) );
         postResponse.media( post.getProductUrl() );
         postResponse.tags( defaultTags( post ) );
@@ -42,6 +43,7 @@ public class PostMapperImpl implements PostMapper {
 
         postResponse.isLiked( false );
         postResponse.isReposted( false );
+        postResponse.isShared( false );
 
         return postResponse.build();
     }

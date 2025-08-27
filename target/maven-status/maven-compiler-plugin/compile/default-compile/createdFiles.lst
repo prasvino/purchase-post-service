@@ -3,6 +3,7 @@ com\app\post\mapper\PostMapperImpl.class
 com\app\trending\controller\TrendingController.class
 com\app\auth\dto\RegisterRequest.class
 com\app\post\dto\PostResponse.class
+com\app\comment\repo\CommentRepository.class
 com\app\post\dto\PostResponse$PostResponseBuilder.class
 com\app\media\dto\PresignedUrlResponse$PresignedUrlResponseBuilder.class
 com\app\init\DataInitializer.class
@@ -12,6 +13,8 @@ com\app\media\dto\PresignedUrlResponse.class
 com\app\auth\security\JwtService.class
 com\app\user\dto\UserSummary$UserSummaryBuilder.class
 com\app\media\worker\S3EventListener.class
+com\app\comment\entity\Comment$CommentBuilder.class
+com\app\comment\service\CommentService.class
 com\app\media\repo\MediaRepository.class
 com\app\common\exception\UnauthorizedException.class
 com\app\platform\controller\PlatformController.class
@@ -29,6 +32,7 @@ com\app\media\aws\S3PresignedUrlGenerator.class
 com\app\platform\entity\Platform$PlatformBuilder.class
 com\app\post\controller\PostController.class
 com\app\config\websocket\WebSocketConfig.class
+com\app\comment\dto\CommentRequest.class
 com\app\platform\entity\Platform.class
 com\app\config\SqsConfig.class
 com\app\trending\service\TrendingService.class
@@ -40,6 +44,8 @@ com\app\user\repo\UserRepository.class
 com\app\auth\controller\AuthController.class
 com\app\media\controller\MediaController.class
 com\app\auth\dto\LoginRequest.class
+com\app\comment\dto\CommentResponse$CommentResponseBuilder.class
+com\app\comment\dto\CommentResponse.class
 com\app\media\entity\Media$MediaBuilder.class
 com\app\config\AwsConfig.class
 com\app\platform\repo\PlatformRepository.class
@@ -47,6 +53,7 @@ com\app\user\mapper\UserMapperImpl.class
 com\app\config\JwtAuthenticationFilter.class
 com\app\post\mapper\PostMapper.class
 com\app\trending\dto\TrendingItem$TrendingItemBuilder.class
+com\app\comment\service\CommentServiceImpl.class
 com\app\common\exception\BadRequestException.class
 com\app\post\service\PostServiceImpl.class
 com\app\user\controller\UserController.class
@@ -54,6 +61,7 @@ com\app\trending\dto\TrendingItem.class
 com\app\media\entity\Media.class
 com\app\media\worker\S3SqsMessageListener.class
 com\app\config\CorsConfig.class
+com\app\comment\entity\Comment.class
 com\app\auth\dto\AuthResponse$AuthResponseBuilder.class
 com\app\media\service\MediaServiceImpl.class
 com\app\post\entity\Post.class
@@ -63,3 +71,4 @@ com\app\config\SecurityConfig.class
 com\app\trending\dto\Stats.class
 com\app\post\entity\Post$PostBuilder.class
 com\app\auth\dto\AuthResponse.class
+com\app\comment\controller\CommentController.class

@@ -15,4 +15,14 @@ public interface PostService {
     Page<PostResponse> getAllPosts(int page, int size);
     Map<String, Object> likePost(UUID postId);
     Map<String, Object> repostPost(UUID postId);
+    Map<String, Object> sharePost(UUID postId);
+    
+    /**
+     * Search posts by keyword across multiple fields
+     * @param keyword The search keyword
+     * @param page Page number (0-based)
+     * @param size Number of posts per page
+     * @return Page of matching posts
+     */
+    Page<PostResponse> searchPosts(String keyword, int page, int size);
 }

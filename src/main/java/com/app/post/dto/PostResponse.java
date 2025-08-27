@@ -27,8 +27,10 @@ public class PostResponse {
     private Integer likes;
     private Integer comments;
     private Integer reposts;
+    private Integer shares;
     private Boolean isLiked;
     private Boolean isReposted;
+    private Boolean isShared;
     
     // Platform inner class
     @Data

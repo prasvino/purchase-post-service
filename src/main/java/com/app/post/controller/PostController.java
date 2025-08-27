@@ -67,4 +67,43 @@ public class PostController {
         Map<String, Object> result = postService.repostPost(postId);
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/{postId}/share")
+    public ResponseEntity<Map<String, Object>> sharePost(@PathVariable UUID postId) {
+        Map<String, Object> result = postService.sharePost(postId);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Search posts by keyword
+     * Searches across post text, author information, and platform name
+     */
+    @GetMapping("/search")
+    public ResponseEntity<Map<String, Object>> searchPosts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        if (keyword != null && keyword.trim().length() < 2) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Search keyword must be at least 2 characters long",
+                "posts", List.of(),
+                "total", 0,
+                "page", page,
+                "size", size,
+                "hasNext", false
+            ));
+        }
+        
+        Page<PostResponse> postsPage = postService.searchPosts(keyword, page, size);
+        
+        return ResponseEntity.ok(Map.of(
+            "posts", postsPage.getContent(),
+            "total", postsPage.getTotalElements(),
+            "page", page,
+            "size", size,
+            "hasNext", postsPage.hasNext(),
+            "keyword", keyword != null ? keyword : ""
+        ));
+    }
 }

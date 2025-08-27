@@ -42,6 +42,7 @@ public class Post {
     private int likeCount;
     private int commentCount;
     private int repostCount;
+    private int shareCount;
 
     private Instant createdAt;
     private Instant updatedAt;

@@ -62,6 +62,7 @@ public class PostServiceImpl implements PostService {
                 .likeCount(0)
                 .commentCount(0)
                 .repostCount(0)
+                .shareCount(0)
                 .build();
 
         post = postRepository.save(post);
@@ -152,5 +153,63 @@ public class PostServiceImpl implements PostService {
             "reposted", true,
             "repostsCount", post.getRepostCount()
         );
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Object> sharePost(UUID postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("Post not found"));
+        
+        post.setShareCount(post.getShareCount() + 1);
+        post.setUpdatedAt(Instant.now());
+        post = postRepository.save(post);
+
+        // Send WebSocket notification for post share
+        messagingTemplate.convertAndSend("/topic/posts", Map.of(
+            "type", "POST_SHARED",
+            "payload", Map.of(
+                "postId", postId.toString(),
+                "userId", getCurrentUser().getId().toString(),
+                "sharesCount", post.getShareCount()
+            ),
+            "timestamp", Instant.now().toString()
+        ));
+
+        return Map.of(
+            "shared", true,
+            "sharesCount", post.getShareCount()
+        );
+    }
+
+    @Override
+    public Page<PostResponse> searchPosts(String keyword, int page, int size) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // If no keyword provided, return all posts
+            return getAllPosts(page, size);
+        }
+        
+        // Clean and prepare the keyword
+        String cleanKeyword = keyword.trim();
+        
+        // Check if keyword contains multiple words
+        String[] keywords = cleanKeyword.split("\\s+");
+        
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        
+        if (keywords.length == 1) {
+            // Single keyword search
+            return postRepository.searchByKeyword(cleanKeyword, pageRequest)
+                    .map(postMapper::toDto);
+        } else if (keywords.length == 2) {
+            // Two keywords search (both must match)
+            return postRepository.searchByTwoKeywords(keywords[0], keywords[1], pageRequest)
+                    .map(postMapper::toDto);
+        } else {
+            // For more than 2 keywords, search with the first keyword only
+            // This can be enhanced later for more complex multi-keyword searches
+            return postRepository.searchByKeyword(keywords[0], pageRequest)
+                    .map(postMapper::toDto);
+        }
     }
 }

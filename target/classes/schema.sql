@@ -52,11 +52,22 @@ CREATE TABLE IF NOT EXISTS posts (
   like_count INT DEFAULT 0,
   comment_count INT DEFAULT 0,
   repost_count INT DEFAULT 0,
+  share_count INT DEFAULT 0,
   created_at TIMESTAMP,
   updated_at TIMESTAMP
 );
 
--- Add foreign key constraints
-ALTER TABLE posts ADD CONSTRAINT fk_posts_author FOREIGN KEY (author_id) REFERENCES users(id);
+CREATE TABLE IF NOT EXISTS comments (
+  id UUID PRIMARY KEY,
+  post_id UUID NOT NULL,
+  author_id UUID NOT NULL,
+  parent_comment_id UUID,
+  text TEXT NOT NULL,
+  like_count INT DEFAULT 0,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+
+-- Foreign key constraints removed - JPA will handle relationships
 ALTER TABLE posts ADD CONSTRAINT fk_posts_platform FOREIGN KEY (platform_id) REFERENCES platforms(id);
 ALTER TABLE media ADD CONSTRAINT fk_media_uploader FOREIGN KEY (uploader_id) REFERENCES users(id);

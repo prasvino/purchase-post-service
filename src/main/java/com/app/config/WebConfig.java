@@ -10,9 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins(
-                    "http://localhost:8082",  // Frontend port
-                    "http://localhost:8080",  // Legacy port if needed
+                .allowedOriginPatterns(
+                    "http://localhost:8080",  // Frontend port
+                    "http://localhost:8082",  // Alternative port
                     "http://localhost:3000",  // React default
                     "http://localhost:5173"   // Vite default port
                 )

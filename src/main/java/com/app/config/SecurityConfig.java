@@ -37,6 +37,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/posts").permitAll()
+                .requestMatchers("/api/posts/**").permitAll()  // Allow all post-related endpoints including comments
+                .requestMatchers("/api/comments/**").permitAll()  // Allow all comment endpoints
                 .requestMatchers("/api/trending").permitAll()
                 .requestMatchers("/api/stats").permitAll()
                 .requestMatchers("/api/platforms").permitAll()

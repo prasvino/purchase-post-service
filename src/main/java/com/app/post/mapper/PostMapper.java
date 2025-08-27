@@ -20,9 +20,11 @@ public interface PostMapper {
     @Mapping(target = "likes", source = "post.likeCount")
     @Mapping(target = "comments", source = "post.commentCount")
     @Mapping(target = "reposts", source = "post.repostCount")
+    @Mapping(target = "shares", source = "post.shareCount")
     @Mapping(target = "platform", source = "post.platform", qualifiedByName = "mapPlatform")
     @Mapping(target = "isLiked", constant = "false")
     @Mapping(target = "isReposted", constant = "false")
+    @Mapping(target = "isShared", constant = "false")
     @Mapping(target = "media", source = "post.productUrl")
     @Mapping(target = "tags", source = "post", qualifiedByName = "defaultTags")
     PostResponse toDto(Post post);
