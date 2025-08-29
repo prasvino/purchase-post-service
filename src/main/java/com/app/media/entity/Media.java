@@ -8,7 +8,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "media")
+@Table(name = "media", schema = "purchase_service")
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
 public class Media {
     @Id

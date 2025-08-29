@@ -1,5 +1,7 @@
--- Basic schema (H2/Postgres compatible)
-CREATE TABLE IF NOT EXISTS users (
+-- Create dedicated schema for purchase service
+CREATE SCHEMA IF NOT EXISTS purchase_service;
+
+CREATE TABLE IF NOT EXISTS purchase_service.users (
   id UUID PRIMARY KEY,
   username VARCHAR(100) UNIQUE NOT NULL,
   display_name VARCHAR(200),
@@ -15,11 +17,11 @@ CREATE TABLE IF NOT EXISTS users (
   following_count INT DEFAULT 0,
   posts_count INT DEFAULT 0,
   total_spent DECIMAL(10,2) DEFAULT 0.00,
-  avg_rating DECIMAL(3,2) DEFAULT 0.00,
+  avg_rating DOUBLE PRECISION DEFAULT 0.00,
   is_online BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE IF NOT EXISTS platforms (
+CREATE TABLE IF NOT EXISTS purchase_service.platforms (
   id UUID PRIMARY KEY,
   name VARCHAR(200),
   domain VARCHAR(200),
@@ -27,7 +29,7 @@ CREATE TABLE IF NOT EXISTS platforms (
   verified BOOLEAN
 );
 
-CREATE TABLE IF NOT EXISTS media (
+CREATE TABLE IF NOT EXISTS purchase_service.media (
   id UUID PRIMARY KEY,
   uploader_id UUID,
   file_name VARCHAR(255),
@@ -38,7 +40,7 @@ CREATE TABLE IF NOT EXISTS media (
   created_at TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS posts (
+CREATE TABLE IF NOT EXISTS purchase_service.posts (
   id UUID PRIMARY KEY,
   author_id UUID,
   text TEXT,
@@ -57,7 +59,7 @@ CREATE TABLE IF NOT EXISTS posts (
   updated_at TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS comments (
+CREATE TABLE IF NOT EXISTS purchase_service.comments (
   id UUID PRIMARY KEY,
   post_id UUID NOT NULL,
   author_id UUID NOT NULL,
@@ -68,6 +70,11 @@ CREATE TABLE IF NOT EXISTS comments (
   updated_at TIMESTAMP
 );
 
--- Foreign key constraints removed - JPA will handle relationships
-ALTER TABLE posts ADD CONSTRAINT fk_posts_platform FOREIGN KEY (platform_id) REFERENCES platforms(id);
-ALTER TABLE media ADD CONSTRAINT fk_media_uploader FOREIGN KEY (uploader_id) REFERENCES users(id);
+-- Foreign key constraints (with safe handling for existing constraints)
+-- Drop existing constraints if they exist
+ALTER TABLE IF EXISTS purchase_service.posts DROP CONSTRAINT IF EXISTS fk_posts_platform;
+ALTER TABLE IF EXISTS purchase_service.media DROP CONSTRAINT IF EXISTS fk_media_uploader;
+
+-- Add constraints
+ALTER TABLE purchase_service.posts ADD CONSTRAINT fk_posts_platform FOREIGN KEY (platform_id) REFERENCES purchase_service.platforms(id);
+ALTER TABLE purchase_service.media ADD CONSTRAINT fk_media_uploader FOREIGN KEY (uploader_id) REFERENCES purchase_service.users(id);

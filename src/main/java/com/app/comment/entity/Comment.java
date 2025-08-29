@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "comments", schema = "purchase_service")
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
 public class Comment {
     @Id

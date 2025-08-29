@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "platforms")
+@Table(name = "platforms", schema = "purchase_service")
 @Data
 @Builder
 @NoArgsConstructor
