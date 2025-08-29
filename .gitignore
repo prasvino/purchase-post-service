@@ -1,7 +1,7 @@
-# Compiled class file
+# Compiled class files
 *.class
 
-# Log file
+# Log files
 *.log
 
 # BlueJ files
@@ -10,7 +10,7 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# Package Files
 *.jar
 *.war
 *.nar
@@ -19,6 +19,180 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Spring Boot
+*.original
+
+# IDE Files
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Application Logs
+logs/
+*.log
+application.log
+spring.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# H2 Database files
+*.h2.db
+*.trace.db
+*.lock.db
+
+# Test outputs
+/test-output/
+testng-reports/
+
+# Node modules (if any frontend components)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Application specific configurations (keep templates)
+application-local.properties
+application-local.yml
+application-dev.properties
+application-dev.yml
+application-prod.properties
+application-prod.yml
+
+# Security files
+*.pem
+*.key
+*.crt
+*.jks
+*.p12
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Coverage reports
+coverage/
+*.lcov
+
+# JaCoCo
+*.exec
+
+# SonarQube
+.sonar/
+
+# Flyway
+# Keep migration files but ignore generated reports
+flyway.conf
+
+# Docker
+.dockerignore
+
+# Kubernetes
+*.kubeconfig
+
+# AWS
+.aws/
+
+# Local development tools
+.tool-versions
+
+# JRebel
+rebel.xml
+
+# JProfiler
+*.jpr
+
+# YourKit
+*.yjp
+
+# Generated sources (keep if needed for debugging)
+# target/generated-sources/
+# target/generated-test-sources/
+
+# Keep important configuration templates
+!src/main/resources/application-template.properties
+!src/main/resources/application-template.yml
+
+# Keep documentation
+!README.md
+!CONTRIBUTING.md
+!LICENSE
+!CHANGELOG.md
+
+# Local testing files
+*.json.local
+*.xml.local
+test-data/
