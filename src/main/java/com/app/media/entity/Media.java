@@ -1,10 +1,12 @@
 package com.app.media.entity;
 
 import com.app.user.entity.User;
+import com.app.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,4 +27,7 @@ public class Media {
     private Long size;
     private String status;     // UPLOADED, PROCESSING, READY
     private Instant createdAt;
+    
+    @ManyToMany(mappedBy = "media", fetch = FetchType.LAZY)
+    private List<Post> posts;
 }

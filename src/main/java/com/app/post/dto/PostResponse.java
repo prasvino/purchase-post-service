@@ -1,6 +1,7 @@
 package com.app.post.dto;
 
 import com.app.user.dto.UserSummary;
+import com.app.media.dto.MediaResponse;
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,8 +20,7 @@ public class PostResponse {
     private BigDecimal price;
     private String currency;
     private Platform platform;
-    private String media;
-    private String mediaType;
+    private List<MediaResponse> media;
     private String location;
     private List<String> tags;
     private Instant timestamp;

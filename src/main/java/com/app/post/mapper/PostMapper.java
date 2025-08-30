@@ -3,6 +3,7 @@ package com.app.post.mapper;
 import com.app.post.dto.PostResponse;
 import com.app.user.dto.UserSummary;
 import com.app.user.mapper.UserMapper;
+import com.app.media.mapper.MediaMapper;
 import com.app.post.entity.Post;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -11,7 +12,7 @@ import org.mapstruct.Named;
 import java.util.Arrays;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class})
+@Mapper(componentModel = "spring", uses = {UserMapper.class, MediaMapper.class})
 public interface PostMapper {
     
     @Mapping(target = "user", source = "post.author")
@@ -25,7 +26,8 @@ public interface PostMapper {
     @Mapping(target = "isLiked", constant = "false")
     @Mapping(target = "isReposted", constant = "false")
     @Mapping(target = "isShared", constant = "false")
-    @Mapping(target = "media", source = "post.productUrl")
+    @Mapping(target = "media", source = "post.media")
+    @Mapping(target = "location", ignore = true)
     @Mapping(target = "tags", source = "post", qualifiedByName = "defaultTags")
     PostResponse toDto(Post post);
 

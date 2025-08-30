@@ -37,19 +37,19 @@ class MediaControllerTest {
         presignedUrlRequest.setSize(1024L);
 
         presignedUrlResponse = PresignedUrlResponse.builder()
-                .uploadUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-test-image.jpg?X-Amz-Signature=test")
-                .fileUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-test-image.jpg")
+                .uploadUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-test-image.jpg?sv=2023-11-03&sr=c&sig=test")
+                .fileUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-test-image.jpg")
                 .mediaId(UUID.randomUUID())
                 .build();
     }
 
     @Test
-    void presigned_ValidRequest_ReturnsPresignedUrlResponse() {
+    void sas_ValidRequest_ReturnsPresignedUrlResponse() {
         // Given
         when(mediaService.createPresignedUpload(any(PresignedUrlRequest.class))).thenReturn(presignedUrlResponse);
 
         // When
-        ResponseEntity<PresignedUrlResponse> response = mediaController.presigned(presignedUrlRequest);
+        ResponseEntity<PresignedUrlResponse> response = mediaController.sas(presignedUrlRequest);
 
         // Then
         assertThat(response.getStatusCode().value()).isEqualTo(200);
@@ -60,22 +60,22 @@ class MediaControllerTest {
     }
 
     @Test
-    void presigned_ImageFile_ReturnsCorrectResponse() {
+    void sas_ImageFile_ReturnsCorrectResponse() {
         // Given
         presignedUrlRequest.setFileName("profile-picture.png");
         presignedUrlRequest.setFileType("image/png");
         presignedUrlRequest.setSize(2048L);
 
         PresignedUrlResponse imageResponse = PresignedUrlResponse.builder()
-                .uploadUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-profile-picture.png?X-Amz-Signature=test")
-                .fileUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-profile-picture.png")
+                .uploadUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-profile-picture.png?sv=2023-11-03&sr=c&sig=test")
+                .fileUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-profile-picture.png")
                 .mediaId(UUID.randomUUID())
                 .build();
 
         when(mediaService.createPresignedUpload(any(PresignedUrlRequest.class))).thenReturn(imageResponse);
 
         // When
-        ResponseEntity<PresignedUrlResponse> response = mediaController.presigned(presignedUrlRequest);
+        ResponseEntity<PresignedUrlResponse> response = mediaController.sas(presignedUrlRequest);
 
         // Then
         assertThat(response.getStatusCode().value()).isEqualTo(200);
@@ -86,22 +86,22 @@ class MediaControllerTest {
     }
 
     @Test
-    void presigned_VideoFile_ReturnsCorrectResponse() {
+    void sas_VideoFile_ReturnsCorrectResponse() {
         // Given
         presignedUrlRequest.setFileName("demo-video.mp4");
         presignedUrlRequest.setFileType("video/mp4");
         presignedUrlRequest.setSize(10485760L); // 10MB
 
         PresignedUrlResponse videoResponse = PresignedUrlResponse.builder()
-                .uploadUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-demo-video.mp4?X-Amz-Signature=test")
-                .fileUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-demo-video.mp4")
+                .uploadUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-demo-video.mp4?sv=2023-11-03&sr=c&sig=test")
+                .fileUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-demo-video.mp4")
                 .mediaId(UUID.randomUUID())
                 .build();
 
         when(mediaService.createPresignedUpload(any(PresignedUrlRequest.class))).thenReturn(videoResponse);
 
         // When
-        ResponseEntity<PresignedUrlResponse> response = mediaController.presigned(presignedUrlRequest);
+        ResponseEntity<PresignedUrlResponse> response = mediaController.sas(presignedUrlRequest);
 
         // Then
         assertThat(response.getStatusCode().value()).isEqualTo(200);
@@ -112,22 +112,22 @@ class MediaControllerTest {
     }
 
     @Test
-    void presigned_DocumentFile_ReturnsCorrectResponse() {
+    void sas_DocumentFile_ReturnsCorrectResponse() {
         // Given
         presignedUrlRequest.setFileName("document.pdf");
         presignedUrlRequest.setFileType("application/pdf");
         presignedUrlRequest.setSize(5242880L); // 5MB
 
         PresignedUrlResponse documentResponse = PresignedUrlResponse.builder()
-                .uploadUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-document.pdf?X-Amz-Signature=test")
-                .fileUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-document.pdf")
+                .uploadUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-document.pdf?sv=2023-11-03&sr=c&sig=test")
+                .fileUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-document.pdf")
                 .mediaId(UUID.randomUUID())
                 .build();
 
         when(mediaService.createPresignedUpload(any(PresignedUrlRequest.class))).thenReturn(documentResponse);
 
         // When
-        ResponseEntity<PresignedUrlResponse> response = mediaController.presigned(presignedUrlRequest);
+        ResponseEntity<PresignedUrlResponse> response = mediaController.sas(presignedUrlRequest);
 
         // Then
         assertThat(response.getStatusCode().value()).isEqualTo(200);
@@ -138,22 +138,22 @@ class MediaControllerTest {
     }
 
     @Test
-    void presigned_LargeFile_ReturnsCorrectResponse() {
+    void sas_LargeFile_ReturnsCorrectResponse() {
         // Given
         presignedUrlRequest.setFileName("large-presentation.pptx");
         presignedUrlRequest.setFileType("application/vnd.openxmlformats-officedocument.presentationml.presentation");
         presignedUrlRequest.setSize(52428800L); // 50MB
 
         PresignedUrlResponse largeFileResponse = PresignedUrlResponse.builder()
-                .uploadUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-large-presentation.pptx?X-Amz-Signature=test")
-                .fileUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-large-presentation.pptx")
+                .uploadUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-large-presentation.pptx?sv=2023-11-03&sr=c&sig=test")
+                .fileUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-large-presentation.pptx")
                 .mediaId(UUID.randomUUID())
                 .build();
 
         when(mediaService.createPresignedUpload(any(PresignedUrlRequest.class))).thenReturn(largeFileResponse);
 
         // When
-        ResponseEntity<PresignedUrlResponse> response = mediaController.presigned(presignedUrlRequest);
+        ResponseEntity<PresignedUrlResponse> response = mediaController.sas(presignedUrlRequest);
 
         // Then
         assertThat(response.getStatusCode().value()).isEqualTo(200);
@@ -164,22 +164,22 @@ class MediaControllerTest {
     }
 
     @Test
-    void presigned_FileWithSpecialCharacters_ReturnsCorrectResponse() {
+    void sas_FileWithSpecialCharacters_ReturnsCorrectResponse() {
         // Given
         presignedUrlRequest.setFileName("my file (1) - copy.jpg");
         presignedUrlRequest.setFileType("image/jpeg");
         presignedUrlRequest.setSize(1024L);
 
         PresignedUrlResponse specialCharsResponse = PresignedUrlResponse.builder()
-                .uploadUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-my%20file%20(1)%20-%20copy.jpg?X-Amz-Signature=test")
-                .fileUrl("https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-my%20file%20(1)%20-%20copy.jpg")
+                .uploadUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-my%20file%20(1)%20-%20copy.jpg?sv=2023-11-03&sr=c&sig=test")
+                .fileUrl("https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-my%20file%20(1)%20-%20copy.jpg")
                 .mediaId(UUID.randomUUID())
                 .build();
 
         when(mediaService.createPresignedUpload(any(PresignedUrlRequest.class))).thenReturn(specialCharsResponse);
 
         // When
-        ResponseEntity<PresignedUrlResponse> response = mediaController.presigned(presignedUrlRequest);
+        ResponseEntity<PresignedUrlResponse> response = mediaController.sas(presignedUrlRequest);
 
         // Then
         assertThat(response.getStatusCode().value()).isEqualTo(200);

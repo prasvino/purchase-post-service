@@ -1,7 +1,7 @@
 package com.app.media.service;
 
 import com.app.common.exception.NotFoundException;
-import com.app.media.aws.S3PresignedUrlGenerator;
+import com.app.media.azure.AzureSasUrlGenerator;
 import com.app.media.dto.PresignedUrlRequest;
 import com.app.media.dto.PresignedUrlResponse;
 import com.app.media.entity.Media;
@@ -13,12 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class MediaServiceImpl implements MediaService {
 
-    private final S3PresignedUrlGenerator generator;
+    private final AzureSasUrlGenerator generator;
     private final MediaRepository mediaRepository;
     private final UserRepository userRepository;
 
@@ -55,5 +57,30 @@ public class MediaServiceImpl implements MediaService {
                 .fileUrl(fileUrl)
                 .mediaId(media.getId())
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Media> getValidatedMediaByIds(List<UUID> mediaIds) {
+        if (mediaIds == null || mediaIds.isEmpty()) {
+            return List.of();
+        }
+
+        User currentUser = getCurrentUser();
+        List<Media> mediaList = mediaRepository.findAllById(mediaIds);
+        
+        // Validate that all requested media IDs were found
+        if (mediaList.size() != mediaIds.size()) {
+            throw new NotFoundException("Some media files not found");
+        }
+        
+        // Validate that all media belongs to the current user
+        for (Media media : mediaList) {
+            if (!media.getUploader().getId().equals(currentUser.getId())) {
+                throw new NotFoundException("Media not found or access denied");
+            }
+        }
+        
+        return mediaList;
     }
 }

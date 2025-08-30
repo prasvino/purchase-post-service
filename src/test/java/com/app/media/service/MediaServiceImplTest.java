@@ -1,7 +1,7 @@
 package com.app.media.service;
 
 import com.app.common.exception.NotFoundException;
-import com.app.media.aws.S3PresignedUrlGenerator;
+import com.app.media.azure.AzureSasUrlGenerator;
 import com.app.media.dto.PresignedUrlRequest;
 import com.app.media.dto.PresignedUrlResponse;
 import com.app.media.entity.Media;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 class MediaServiceImplTest {
 
     @Mock
-    private S3PresignedUrlGenerator generator;
+    private AzureSasUrlGenerator generator;
 
     @Mock
     private MediaRepository mediaRepository;
@@ -73,8 +73,8 @@ class MediaServiceImplTest {
     @Test
     void createPresignedUpload_ValidRequest_ReturnsPresignedUrlResponse() {
         // Given
-        String expectedUploadUrl = "https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-test-image.jpg?X-Amz-Signature=test";
-        String expectedFileUrl = "https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-test-image.jpg";
+        String expectedUploadUrl = "https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-test-image.jpg?sv=2023-11-03&sr=c&sig=test";
+        String expectedFileUrl = "https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-test-image.jpg";
 
         when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
         when(mediaRepository.save(any(Media.class))).thenReturn(testMedia);
@@ -135,7 +135,7 @@ class MediaServiceImplTest {
     @Test
     void createPresignedUpload_UpdatesMediaWithUrl() {
         // Given
-        String expectedFileUrl = "https://test-bucket.s3.amazonaws.com/uploads/user-id/media-id-test-image.jpg";
+        String expectedFileUrl = "https://teststorageaccount.blob.core.windows.net/purchase-post-media/uploads/user-id/media-id-test-image.jpg";
         
         when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
         when(generator.generateUploadUrl(anyString(), anyString())).thenReturn("upload-url");
@@ -155,7 +155,7 @@ class MediaServiceImplTest {
     }
 
     @Test
-    void createPresignedUpload_GeneratesCorrectS3Key() {
+    void createPresignedUpload_GeneratesCorrectAzureBlobKey() {
         // Given
         when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
         when(mediaRepository.save(any(Media.class))).thenReturn(testMedia);

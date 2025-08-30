@@ -34,18 +34,20 @@ spring:
     baseline-version: 0
     baseline-description: "Initial baseline"
 
+# Azure Configuration
+azure:
+  storage:
+    connection-string: DefaultEndpointsProtocol=https;AccountName=your-storage-account;AccountKey=your-account-key;EndpointSuffix=core.windows.net
+    account-name: your-storage-account
+    container: purchase-post-media
+  servicebus:
+    connection-string: Endpoint=sb://your-servicebus-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=your-shared-access-key
+    queue-name: blob-upload-events
+
 app:
-  s3:
-    bucket: your-bucket-name
-    sqsQueue: your-s3-event-queue-name
   jwt:
     secret: mySecretKeyThatIsAtLeast32CharactersLongForJWTSecurity
     expiration: 86400
-
-cloud:
-  aws:
-    region:
-      static: us-east-1
 
 server:
   port: 8081

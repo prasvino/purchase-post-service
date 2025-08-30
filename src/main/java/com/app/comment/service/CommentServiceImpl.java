@@ -3,7 +3,9 @@ package com.app.comment.service;
 import com.app.comment.dto.CommentRequest;
 import com.app.comment.dto.CommentResponse;
 import com.app.comment.entity.Comment;
+import com.app.comment.entity.CommentLike;
 import com.app.comment.repo.CommentRepository;
+import com.app.comment.repo.CommentLikeRepository;
 import com.app.common.exception.NotFoundException;
 import com.app.common.exception.UnauthorizedException;
 import com.app.post.entity.Post;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -168,27 +172,52 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Map<String, Object> likeComment(UUID commentId) {
+        User currentUser = getCurrentUser();
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Comment not found"));
-
-        comment.setLikeCount(comment.getLikeCount() + 1);
+        
+        // Check if user has already liked this comment
+        Optional<CommentLike> existingLike = commentLikeRepository.findByUserIdAndCommentId(currentUser.getId(), commentId);
+        
+        boolean isLiked;
+        int newLikeCount;
+        
+        if (existingLike.isPresent()) {
+            // User has already liked, so unlike it
+            commentLikeRepository.delete(existingLike.get());
+            newLikeCount = Math.max(0, comment.getLikeCount() - 1);
+            isLiked = false;
+        } else {
+            // User hasn't liked, so like it
+            CommentLike commentLike = CommentLike.builder()
+                    .user(currentUser)
+                    .comment(comment)
+                    .createdAt(Instant.now())
+                    .build();
+            commentLikeRepository.save(commentLike);
+            newLikeCount = comment.getLikeCount() + 1;
+            isLiked = true;
+        }
+        
+        // Update comment like count
+        comment.setLikeCount(newLikeCount);
         comment.setUpdatedAt(Instant.now());
         comment = commentRepository.save(comment);
 
-        // Send WebSocket notification for comment like
+        // Send WebSocket notification for comment like/unlike
         messagingTemplate.convertAndSend("/topic/posts", Map.of(
-            "type", "COMMENT_LIKED",
+            "type", isLiked ? "COMMENT_LIKED" : "COMMENT_UNLIKED",
             "payload", Map.of(
                 "commentId", commentId.toString(),
-                "userId", getCurrentUser().getId().toString(),
-                "likesCount", comment.getLikeCount()
+                "userId", currentUser.getId().toString(),
+                "likesCount", newLikeCount
             ),
             "timestamp", Instant.now().toString()
         ));
 
         return Map.of(
-            "liked", true,
-            "likesCount", comment.getLikeCount()
+            "liked", isLiked,
+            "likesCount", newLikeCount
         );
     }
 
@@ -203,6 +232,10 @@ public class CommentServiceImpl implements CommentService {
     private CommentResponse toCommentResponse(Comment comment) {
         UserSummary authorSummary = userMapper.toDto(comment.getAuthor());
         
+        // Check if current user has liked this comment
+        User currentUser = getCurrentUser();
+        boolean isLiked = commentLikeRepository.existsByUserIdAndCommentId(currentUser.getId(), comment.getId());
+        
         return CommentResponse.builder()
                 .id(comment.getId())
                 .text(comment.getText())
@@ -210,7 +243,7 @@ public class CommentServiceImpl implements CommentService {
                 .postId(comment.getPost().getId())
                 .parentCommentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null)
                 .likeCount(comment.getLikeCount())
-                .isLiked(false) // TODO: implement user-specific like tracking
+                .isLiked(isLiked)
                 .replies(null) // TODO: load replies if needed
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())

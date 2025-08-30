@@ -2,6 +2,8 @@ package com.app.post.service;
 
 import com.app.common.exception.NotFoundException;
 import com.app.media.repo.MediaRepository;
+import com.app.media.service.MediaService;
+import com.app.media.entity.Media;
 import com.app.platform.entity.Platform;
 import com.app.platform.repo.PlatformRepository;
 import com.app.post.dto.PostCreateRequest;
@@ -9,6 +11,7 @@ import com.app.post.dto.PostResponse;
 import com.app.post.entity.Post;
 import com.app.post.mapper.PostMapper;
 import com.app.post.repo.PostRepository;
+import com.app.post.repo.PostLikeRepository;
 import com.app.user.entity.User;
 import com.app.user.repo.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,12 +41,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceImplTest {
 
     @Mock
     private PostRepository postRepository;
+
+    @Mock
+    private PostLikeRepository postLikeRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -53,6 +60,9 @@ class PostServiceImplTest {
 
     @Mock
     private MediaRepository mediaRepository;
+
+    @Mock
+    private MediaService mediaService;
 
     @Mock
     private PostMapper postMapper;
@@ -128,6 +138,9 @@ class PostServiceImplTest {
                 .isReposted(false)
                 .isShared(false)
                 .build();
+        
+        // Default mock for like existence check
+        lenient().when(postLikeRepository.existsByUserIdAndPostId(any(), any())).thenReturn(false);
     }
 
     @Test
@@ -287,9 +300,10 @@ class PostServiceImplTest {
     @Test
     void likePost_ValidPost_ReturnsLikeResult() {
         // Given
-        when(postRepository.findById(testPost.getId())).thenReturn(Optional.of(testPost));
-        when(postRepository.save(any(Post.class))).thenReturn(testPost);
         when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
+        when(postRepository.findById(testPost.getId())).thenReturn(Optional.of(testPost));
+        when(postLikeRepository.findByUserIdAndPostId(testUser.getId(), testPost.getId())).thenReturn(Optional.empty());
+        when(postRepository.save(any(Post.class))).thenReturn(testPost);
 
         // When
         Map<String, Object> result = postService.likePost(testPost.getId());
@@ -302,6 +316,9 @@ class PostServiceImplTest {
 
         // Verify WebSocket notification is sent
         verify(messagingTemplate).convertAndSend(eq("/topic/posts"), any(Map.class));
+        
+        // Verify PostLike is saved
+        verify(postLikeRepository).save(any());
     }
 
     @Test
@@ -443,8 +460,9 @@ class PostServiceImplTest {
     @Test
     void likePost_UpdatesTimestamp() {
         // Given
-        when(postRepository.findById(testPost.getId())).thenReturn(Optional.of(testPost));
         when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
+        when(postRepository.findById(testPost.getId())).thenReturn(Optional.of(testPost));
+        when(postLikeRepository.findByUserIdAndPostId(testUser.getId(), testPost.getId())).thenReturn(Optional.empty());
 
         ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
         when(postRepository.save(postCaptor.capture())).thenReturn(testPost);
@@ -465,8 +483,14 @@ class PostServiceImplTest {
         List<UUID> mediaIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
         postCreateRequest.setMediaIds(mediaIds);
         
+        List<Media> mockMedia = Arrays.asList(
+            Media.builder().id(mediaIds.get(0)).build(),
+            Media.builder().id(mediaIds.get(1)).build()
+        );
+        
         when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
         when(platformRepository.findById(testPlatform.getId())).thenReturn(Optional.of(testPlatform));
+        when(mediaService.getValidatedMediaByIds(mediaIds)).thenReturn(mockMedia);
         when(postRepository.save(any(Post.class))).thenReturn(testPost);
         when(postMapper.toDto(testPost)).thenReturn(postResponse);
 
@@ -475,7 +499,8 @@ class PostServiceImplTest {
 
         // Then
         assertThat(result).isNotNull();
-        // Note: Media handling is commented out in the service implementation
-        // This test verifies the request is processed without errors
+        verify(mediaService).getValidatedMediaByIds(mediaIds);
+        // Verify the post was saved twice (initial save + save with media)
+        verify(postRepository, times(2)).save(any(Post.class));
     }
 }

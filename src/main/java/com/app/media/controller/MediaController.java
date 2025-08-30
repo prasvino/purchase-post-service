@@ -15,8 +15,8 @@ public class MediaController {
 
     private final MediaService mediaService;
 
-    @PostMapping("/presigned")
-    public ResponseEntity<PresignedUrlResponse> presigned(@Valid @RequestBody PresignedUrlRequest request) {
+    @PostMapping("/sas")
+    public ResponseEntity<PresignedUrlResponse> sas(@Valid @RequestBody PresignedUrlRequest request) {
         return ResponseEntity.ok(mediaService.createPresignedUpload(request));
     }
 }

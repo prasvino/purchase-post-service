@@ -27,16 +27,9 @@
     <dependencyManagement> 
         <dependencies>
             <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>bom</artifactId>
-                <version>2.32.22</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.awspring.cloud</groupId>
-                <artifactId>spring-cloud-aws-dependencies</artifactId>
-                <version>3.2.0</version> <!-- Or a compatible later version like 3.1.x, check compatibility matrix -->
+                <groupId>com.azure</groupId>
+                <artifactId>azure-sdk-bom</artifactId>
+                <version>1.2.27</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -115,21 +108,15 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- AWS SDK (for existing S3 integration) -->
+        <!-- Azure SDK Dependencies -->
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
         </dependency>
         
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>sqs</artifactId>
-        </dependency>
-        
-        <!-- Spring Cloud AWS SQS for @SqsListener -->
-        <dependency>
-            <groupId>io.awspring.cloud</groupId>
-            <artifactId>spring-cloud-aws-starter-sqs</artifactId>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-messaging-servicebus</artifactId>
         </dependency>
 
         <!-- Test -->

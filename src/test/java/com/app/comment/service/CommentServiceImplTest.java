@@ -4,6 +4,7 @@ import com.app.comment.dto.CommentRequest;
 import com.app.comment.dto.CommentResponse;
 import com.app.comment.entity.Comment;
 import com.app.comment.repo.CommentRepository;
+import com.app.comment.repo.CommentLikeRepository;
 import com.app.common.exception.NotFoundException;
 import com.app.common.exception.UnauthorizedException;
 import com.app.post.entity.Post;
@@ -36,12 +37,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceImplTest {
 
     @Mock
     private CommentRepository commentRepository;
+
+    @Mock
+    private CommentLikeRepository commentLikeRepository;
 
     @Mock
     private PostRepository postRepository;
@@ -101,6 +106,9 @@ class CommentServiceImplTest {
                 .name("Test User")
                 .avatar("avatar-url")
                 .build();
+        
+        // Default mock for like existence check
+        lenient().when(commentLikeRepository.existsByUserIdAndCommentId(any(), any())).thenReturn(false);
     }
 
     @Test
@@ -204,6 +212,7 @@ class CommentServiceImplTest {
         Page<Comment> commentsPage = new PageImpl<>(comments);
         when(commentRepository.findByPostIdOrderByCreatedAtAsc(eq(testPost.getId()), any(PageRequest.class)))
                 .thenReturn(commentsPage);
+        when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
         when(userMapper.toDto(testUser)).thenReturn(userSummary);
 
         // When
@@ -220,6 +229,7 @@ class CommentServiceImplTest {
         // Given
         List<Comment> comments = Arrays.asList(testComment);
         when(commentRepository.findTopLevelCommentsByPostId(testPost.getId())).thenReturn(comments);
+        when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
         when(userMapper.toDto(testUser)).thenReturn(userSummary);
 
         // When
@@ -248,6 +258,7 @@ class CommentServiceImplTest {
 
         List<Comment> replies = Arrays.asList(replyComment);
         when(commentRepository.findRepliesByParentCommentId(testComment.getId())).thenReturn(replies);
+        when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
         when(userMapper.toDto(testUser)).thenReturn(userSummary);
 
         // When
@@ -264,6 +275,7 @@ class CommentServiceImplTest {
     void getCommentById_ValidCommentId_ReturnsComment() {
         // Given
         when(commentRepository.findById(testComment.getId())).thenReturn(Optional.of(testComment));
+        when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
         when(userMapper.toDto(testUser)).thenReturn(userSummary);
 
         // When
@@ -365,9 +377,10 @@ class CommentServiceImplTest {
     @Test
     void likeComment_ValidComment_ReturnsLikeResult() {
         // Given
-        when(commentRepository.findById(testComment.getId())).thenReturn(Optional.of(testComment));
-        when(commentRepository.save(any(Comment.class))).thenReturn(testComment);
         when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
+        when(commentRepository.findById(testComment.getId())).thenReturn(Optional.of(testComment));
+        when(commentLikeRepository.findByUserIdAndCommentId(testUser.getId(), testComment.getId())).thenReturn(Optional.empty());
+        when(commentRepository.save(any(Comment.class))).thenReturn(testComment);
 
         // When
         Map<String, Object> result = commentService.likeComment(testComment.getId());
@@ -380,6 +393,9 @@ class CommentServiceImplTest {
 
         // Verify WebSocket notification is sent
         verify(messagingTemplate).convertAndSend(eq("/topic/posts"), any(Map.class));
+        
+        // Verify CommentLike is saved
+        verify(commentLikeRepository).save(any());
     }
 
     @Test
@@ -401,6 +417,7 @@ class CommentServiceImplTest {
         Page<Comment> commentsPage = new PageImpl<>(comments);
         when(commentRepository.findByAuthorIdOrderByCreatedAtDesc(eq(testUser.getId()), any(PageRequest.class)))
                 .thenReturn(commentsPage);
+        when(userRepository.findAll()).thenReturn(Arrays.asList(testUser));
         when(userMapper.toDto(testUser)).thenReturn(userSummary);
 
         // When

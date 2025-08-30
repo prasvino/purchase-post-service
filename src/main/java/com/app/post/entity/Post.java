@@ -2,12 +2,14 @@ package com.app.post.entity;
 
 import com.app.user.entity.User;
 import com.app.platform.entity.Platform;
+import com.app.media.entity.Media;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -43,6 +45,15 @@ public class Post {
     private int commentCount;
     private int repostCount;
     private int shareCount;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "post_media",
+        schema = "purchase_service",
+        joinColumns = @JoinColumn(name = "post_id"),
+        inverseJoinColumns = @JoinColumn(name = "media_id")
+    )
+    private List<Media> media;
 
     private Instant createdAt;
     private Instant updatedAt;
